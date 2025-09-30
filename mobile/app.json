@@ -1,0 +1,9 @@
+{
+  "name": "WitlyMusic",
+  "displayName": "Witly Music",
+  "extra": {
+    "eas": {
+      "projectId": "a056d534-791d-4305-96ba-94fa000fd266"
+    }
+  }
+}
