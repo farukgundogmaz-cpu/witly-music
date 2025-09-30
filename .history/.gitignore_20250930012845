@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+backend/.env
+mobile/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.project
+
+# Backend
+backend/dist/
+backend/build/
+backend/coverage/
+
+# Mobile - React Native
+mobile/android/app/build/
+mobile/android/.gradle/
+mobile/ios/build/
+mobile/ios/Pods/
+mobile/ios/*.xcworkspace
+mobile/.expo/
+mobile/.expo-shared/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build files
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Metro bundler
+mobile/.metro-health-check*
+
+# Debug
+mobile/android/app/debug
+mobile/android/app/release
+
+# Misc
+*.pem
+*.cer

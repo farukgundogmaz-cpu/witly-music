@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Witly Music - Backend Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 42px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .search-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #fff;
+            color: #000;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            background: #1DB954;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29, 185, 84, 0.4);
+        }
+        
+        .results {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .song {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+        
+        .song:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+        
+        .song img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+        }
+        
+        .song-info {
+            flex: 1;
+        }
+        
+        .song-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .song-artist {
+            color: #B3B3B3;
+            font-size: 14px;
+        }
+        
+        .play-btn {
+            width: auto;
+            padding: 10px 20px;
+            margin: 0;
+            background: #1DB954;
+            border-radius: 50px;
+        }
+        
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+        }
+        
+        .error {
+            background: rgba(255,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: #ff6b6b;
+        }
+        
+        .status {
+            background: rgba(29, 185, 84, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Witly Music</h1>
+        
+        <div class="status" id="status">
+            ✅ Backend API Çalışıyor (localhost:3000)
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Şarkı veya sanatçı ara..." value="Billie Eilish">
+            <button onclick="searchMusic()">🔍 Ara</button>
+            <button onclick="getCharts()">🔥 Popüler Şarkılar</button>
+        </div>
+        
+        <div id="results" class="results"></div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        async function searchMusic() {
+            const query = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = '<div class="loading">🔍 Aranıyor...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/music/search?q=${encodeURIComponent(query)}&limit=10`);
+                const data = await response.json();
+                
+                displayResults(data.results.data);
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Hata: ${error.message}<br>Backend çalışıyor mu kontrol edin.</div>`;
+            }
+        }
+        
+        async function getCharts() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">📊 Popüler şarkılar yükleniyor...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/music/charts?limit=10`);
+                const data = await response.json();
+                
+                displayResults(data.charts.data);
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Hata: ${error.message}</div>`;
+            }
+        }
+        
+        function displayResults(songs) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!songs || songs.length === 0) {
+                resultsDiv.innerHTML = '<div class="loading">Sonuç bulunamadı</div>';
+                return;
+            }
+            
+            let html = '<h2 style="margin-bottom: 15px;">🎶 Sonuçlar:</h2>';
+            
+            songs.forEach((song, index) => {
+                html += `
+                    <div class="song">
+                        <img src="${song.album.cover_medium || song.album.cover}" alt="${song.title}">
+                        <div class="song-info">
+                            <div class="song-title">${index + 1}. ${song.title}</div>
+                            <div class="song-artist">🎤 ${song.artist.name}</div>
+                            <div class="song-artist">💿 ${song.album.title}</div>
+                        </div>
+                        <button class="play-btn" onclick="playPreview('${song.preview}', '${song.title}')">
+                            ▶️ Dinle (30sn)
+                        </button>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function playPreview(url, title) {
+            const resultsDiv = document.getElementById('results');
+            const audioPlayer = document.getElementById('audioPlayer');
+            
+            if (audioPlayer) {
+                audioPlayer.remove();
+            }
+            
+            const audio = document.createElement('audio');
+            audio.id = 'audioPlayer';
+            audio.controls = true;
+            audio.autoplay = true;
+            audio.src = url;
+            
+            const playerDiv = document.createElement('div');
+            playerDiv.innerHTML = `<h3 style="margin-top: 20px;">🎵 Şimdi Çalıyor: ${title}</h3>`;
+            playerDiv.appendChild(audio);
+            
+            resultsDiv.insertBefore(playerDiv, resultsDiv.firstChild);
+        }
+        
+        // Sayfa yüklendiğinde backend'i kontrol et
+        async function checkBackend() {
+            try {
+                const response = await fetch(`${API_URL}/music/charts?limit=1`);
+                if (response.ok) {
+                    document.getElementById('status').innerHTML = '✅ Backend API Çalışıyor (localhost:3000)';
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = '❌ Backend çalışmıyor! Terminal\'de "npm run dev" çalıştırın.';
+                document.getElementById('status').style.background = 'rgba(255,0,0,0.3)';
+            }
+        }
+        
+        checkBackend();
+    </script>
+</body>
+</html>

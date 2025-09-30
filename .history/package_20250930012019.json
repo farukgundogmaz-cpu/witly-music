@@ -1,0 +1,25 @@
+{
+  "name": "witly-music",
+  "version": "1.0.0",
+  "description": "Witly Music - Modern Music Streaming App",
+  "main": "index.js",
+  "scripts": {
+    "android": "cd mobile && react-native run-android",
+    "ios": "cd mobile && react-native run-ios",
+    "start": "cd mobile && react-native start",
+    "server": "cd backend && node server.js",
+    "server:dev": "cd backend && nodemon server.js",
+    "install:mobile": "cd mobile && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:mobile && npm run install:backend"
+  },
+  "keywords": [
+    "music",
+    "streaming",
+    "react-native",
+    "nodejs",
+    "pocketbase"
+  ],
+  "author": "Witly Design",
+  "license": "MIT"
+}
